@@ -11,9 +11,7 @@ function showPage(pageId) {
     link.classList.toggle("active", link.dataset.page === pageId);
   });
 
-  if (pageId === "solicitacoes") {
-    renderReports();
-  }
+  if (pageId === "solicitacoes") renderReports();
 
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -30,31 +28,70 @@ const photoInput = document.getElementById("photo");
 
 let selectedPhoto = "";
 
-photoInput.addEventListener("change", () => {
+// Reduz o tamanho da imagem antes de salvar
+function compressImage(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = event => {
+      const image = new Image();
+
+      image.onload = () => {
+        const canvas = document.createElement("canvas");
+        const maxSize = 900;
+
+        let width = image.width;
+        let height = image.height;
+
+        if (width > height && width > maxSize) {
+          height = height * maxSize / width;
+          width = maxSize;
+        } else if (height > maxSize) {
+          width = width * maxSize / height;
+          height = maxSize;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        const context = canvas.getContext("2d");
+        context.drawImage(image, 0, 0, width, height);
+
+        resolve(canvas.toDataURL("image/jpeg", 0.65));
+      };
+
+      image.onerror = reject;
+      image.src = event.target.result;
+    };
+
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+photoInput.addEventListener("change", async () => {
   const file = photoInput.files[0];
 
-  if (!file) {
-    selectedPhoto = "";
-    return;
+  selectedPhoto = "";
+
+  if (!file) return;
+
+  try {
+    selectedPhoto = await compressImage(file);
+  } catch {
+    alert("Não foi possível carregar a imagem. Tente outra foto.");
+    photoInput.value = "";
   }
-
-  const reader = new FileReader();
-
-  reader.onload = event => {
-    selectedPhoto = event.target.result;
-  };
-
-  reader.onerror = () => {
-    alert("Não foi possível carregar essa imagem.");
-  };
-
-  reader.readAsDataURL(file);
 });
 
 function getReports() {
-  return JSON.parse(
-    localStorage.getItem("minhaComunidadeReports") || "[]"
-  );
+  try {
+    return JSON.parse(
+      localStorage.getItem("minhaComunidadeReports") || "[]"
+    );
+  } catch {
+    return [];
+  }
 }
 
 function saveReports(reports) {
@@ -64,21 +101,21 @@ function saveReports(reports) {
   );
 }
 
+// Cadastrar ocorrência
 form.addEventListener("submit", event => {
   event.preventDefault();
 
   const report = {
     id: Date.now(),
     category: document.getElementById("category").value,
-    location: document.getElementById("location").value,
-    description: document.getElementById("description").value,
+    location: document.getElementById("location").value.trim(),
+    description: document.getElementById("description").value.trim(),
     photo: selectedPhoto,
     date: new Date().toLocaleDateString("pt-BR"),
     status: "Recebida"
   };
 
   const reports = getReports();
-
   reports.unshift(report);
 
   try {
@@ -94,29 +131,27 @@ form.addEventListener("submit", event => {
 
   } catch (error) {
     document.getElementById("form-message").textContent =
-      "Não foi possível salvar. Tente uma imagem menor.";
-
-    return;
+      "Não foi possível salvar. Exclua uma ocorrência antiga e tente novamente.";
   }
 });
 
-// EXCLUIR SOLICITAÇÃO
+// Excluir uma ocorrência
 function deleteReport(id) {
-  const confirmDelete = confirm(
-    "Deseja realmente excluir esta solicitação?"
-  );
+  if (!confirm("Deseja realmente excluir esta solicitação?")) {
+    return;
+  }
 
-  if (!confirmDelete) return;
+  const reports = getReports().filter(report => report.id !== id);
 
-  const reports = getReports().filter(
-    report => report.id !== id
-  );
-
-  saveReports(reports);
-  renderReports();
+  try {
+    saveReports(reports);
+    renderReports();
+  } catch {
+    alert("Não foi possível excluir a solicitação.");
+  }
 }
 
-// MOSTRAR SOLICITAÇÕES
+// Mostrar as ocorrências cadastradas
 function renderReports() {
   const list = document.getElementById("report-list");
   const reports = getReports();
@@ -162,12 +197,14 @@ function renderReports() {
       image.style.maxWidth = "220px";
       image.style.display = "block";
       image.style.marginTop = "12px";
+      image.style.borderRadius = "8px";
       card.appendChild(image);
     }
 
     const deleteButton = document.createElement("button");
-    deleteButton.textContent = "Excluir solicitação";
+    deleteButton.type = "button";
     deleteButton.className = "delete-button";
+    deleteButton.textContent = "Excluir solicitação";
 
     deleteButton.addEventListener("click", () => {
       deleteReport(report.id);
