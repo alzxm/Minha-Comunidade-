@@ -67,3 +67,20 @@ footer { padding: 22px; text-align: center; border-top: 1px solid var(--line); c
   .hero-card { min-height: 220px; }
   .steps { grid-template-columns: 1fr; }
 }
+
+
+
+.delete-button {
+  margin-top: 15px;
+  padding: 9px 15px;
+  border: 1px solid #c94b4b;
+  border-radius: 7px;
+  background: white;
+  color: #b83232;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.delete-button:hover {
+  background: #fff0f0;
+}
