@@ -27,6 +27,7 @@ navLinks.forEach(button => {
 
 const form = document.getElementById("report-form");
 const photoInput = document.getElementById("photo");
+
 let selectedPhoto = "";
 
 photoInput.addEventListener("change", () => {
@@ -43,17 +44,17 @@ photoInput.addEventListener("change", () => {
     selectedPhoto = event.target.result;
   };
 
+  reader.onerror = () => {
+    alert("Não foi possível carregar essa imagem.");
+  };
+
   reader.readAsDataURL(file);
 });
 
 function getReports() {
-  try {
-    return JSON.parse(
-      localStorage.getItem("minhaComunidadeReports")
-    ) || [];
-  } catch {
-    return [];
-  }
+  return JSON.parse(
+    localStorage.getItem("minhaComunidadeReports") || "[]"
+  );
 }
 
 function saveReports(reports) {
@@ -69,35 +70,40 @@ form.addEventListener("submit", event => {
   const report = {
     id: Date.now(),
     category: document.getElementById("category").value,
-    location: document.getElementById("location").value.trim(),
-    description: document.getElementById("description").value.trim(),
+    location: document.getElementById("location").value,
+    description: document.getElementById("description").value,
     photo: selectedPhoto,
     date: new Date().toLocaleDateString("pt-BR"),
     status: "Recebida"
   };
 
   const reports = getReports();
+
   reports.unshift(report);
 
   try {
     saveReports(reports);
 
     document.getElementById("form-message").textContent =
-      "Solicitação registrada com sucesso!";
+      "Solicitação cadastrada com sucesso!";
 
     form.reset();
     selectedPhoto = "";
 
-  } catch {
+    renderReports();
+
+  } catch (error) {
     document.getElementById("form-message").textContent =
-      "Não foi possível salvar. Tente novamente sem a foto.";
+      "Não foi possível salvar. Tente uma imagem menor.";
+
+    return;
   }
 });
 
-// Função para excluir uma ocorrência
+// EXCLUIR SOLICITAÇÃO
 function deleteReport(id) {
   const confirmDelete = confirm(
-    "Tem certeza de que deseja excluir esta solicitação?"
+    "Deseja realmente excluir esta solicitação?"
   );
 
   if (!confirmDelete) return;
@@ -110,6 +116,7 @@ function deleteReport(id) {
   renderReports();
 }
 
+// MOSTRAR SOLICITAÇÕES
 function renderReports() {
   const list = document.getElementById("report-list");
   const reports = getReports();
@@ -119,8 +126,8 @@ function renderReports() {
   if (reports.length === 0) {
     list.innerHTML = `
       <div class="empty">
-        <h3>Nenhuma solicitação por enquanto</h3>
-        <p>Quando um problema for registrado, ele aparecerá aqui.</p>
+        <h3>Nenhuma solicitação cadastrada</h3>
+        <p>As ocorrências registradas aparecerão aqui.</p>
       </div>
     `;
     return;
@@ -133,17 +140,12 @@ function renderReports() {
     const title = document.createElement("h3");
     title.textContent = report.category;
 
-    const meta = document.createElement("div");
-    meta.className = "report-meta";
-
     const status = document.createElement("span");
     status.className = "status";
     status.textContent = report.status;
 
-    const date = document.createElement("span");
-    date.textContent = report.date;
-
-    meta.append(status, date);
+    const date = document.createElement("p");
+    date.textContent = "Data: " + report.date;
 
     const location = document.createElement("p");
     location.textContent = "Local: " + report.location;
@@ -151,22 +153,25 @@ function renderReports() {
     const description = document.createElement("p");
     description.textContent = report.description;
 
+    card.append(title, status, date, location, description);
+
+    if (report.photo) {
+      const image = document.createElement("img");
+      image.src = report.photo;
+      image.alt = "Foto da ocorrência";
+      image.style.maxWidth = "220px";
+      image.style.display = "block";
+      image.style.marginTop = "12px";
+      card.appendChild(image);
+    }
+
     const deleteButton = document.createElement("button");
+    deleteButton.textContent = "Excluir solicitação";
     deleteButton.className = "delete-button";
-    deleteButton.textContent = "Excluir";
 
     deleteButton.addEventListener("click", () => {
       deleteReport(report.id);
     });
-
-    card.append(title, meta, location, description);
-
-    if (report.photo) {
-      const img = document.createElement("img");
-      img.src = report.photo;
-      img.alt = "Foto anexada à solicitação";
-      card.appendChild(img);
-    }
 
     card.appendChild(deleteButton);
     list.appendChild(card);
