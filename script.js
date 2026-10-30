@@ -128,7 +128,6 @@ form.addEventListener("submit", event => {
     selectedPhoto = "";
 
     renderReports();
-
   } catch (error) {
     document.getElementById("form-message").textContent =
       "Não foi possível salvar. Exclua uma ocorrência antiga e tente novamente.";
@@ -141,7 +140,9 @@ function deleteReport(id) {
     return;
   }
 
-  const reports = getReports().filter(report => report.id !== id);
+  const reports = getReports().filter(
+    report => String(report.id) !== String(id)
+  );
 
   try {
     saveReports(reports);
