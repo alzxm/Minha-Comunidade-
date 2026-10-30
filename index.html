@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minha Comunidade</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#" data-page="inicio">Minha Comunidade</a>
+    <nav aria-label="Navegação principal">
+      <button class="nav-link active" data-page="inicio">Início</button>
+      <button class="nav-link" data-page="registrar">Registrar problema</button>
+      <button class="nav-link" data-page="solicitacoes">Solicitações</button>
+      <button class="nav-link" data-page="sobre">Sobre</button>
+    </nav>
+  </header>
+
+  <main>
+    <section id="inicio" class="page active">
+      <div class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">CUIDAR DO BAIRRO É UMA RESPONSABILIDADE DE TODOS</p>
+          <h1>Uma comunidade melhor começa com uma atitude.</h1>
+          <p>Registre problemas do seu bairro e ajude a dar visibilidade ao que precisa de atenção.</p>
+          <button class="primary" data-page="registrar">Registrar um problema</button>
+        </div>
+        <div class="hero-card">
+          <div class="mini-label">MINHA COMUNIDADE</div>
+          <div class="big-number">Sua voz<br>faz diferença.</div>
+          <p>Pequenas informações podem ajudar a identificar grandes melhorias.</p>
+        </div>
+      </div>
+
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">COMO FUNCIONA</p>
+          <h2>É simples participar</h2>
+        </div>
+      </div>
+      <div class="steps">
+        <article class="step"><span>01</span><h3>Identifique</h3><p>Encontrou um problema na sua rua ou no bairro? Registre por aqui.</p></article>
+        <article class="step"><span>02</span><h3>Informe</h3><p>Descreva o que aconteceu e indique o local para facilitar a identificação.</p></article>
+        <article class="step"><span>03</span><h3>Acompanhe</h3><p>Consulte a lista de solicitações e veja os exemplos de status.</p></article>
+      </div>
+      <div class="notice"><strong>Projeto demonstrativo:</strong> este protótipo foi criado para uma atividade escolar. Os registros ficam salvos apenas neste navegador e não são enviados à prefeitura.</div>
+    </section>
+
+    <section id="registrar" class="page">
+      <div class="page-heading">
+        <p class="eyebrow">PARTICIPE</p>
+        <h1>Registrar um problema</h1>
+        <p>Preencha as informações abaixo para criar uma solicitação demonstrativa.</p>
+      </div>
+      <form id="report-form" class="form-card">
+        <label for="category">Tipo de problema</label>
+        <select id="category" required>
+          <option value="">Selecione uma opção</option>
+          <option>Buraco na rua</option>
+          <option>Acúmulo de lixo</option>
+          <option>Iluminação pública</option>
+          <option>Calçada danificada</option>
+          <option>Outro</option>
+        </select>
+
+        <label for="location">Localização</label>
+        <input id="location" type="text" placeholder="Ex.: Rua das Flores, próximo ao número 100" required>
+
+        <label for="description">Descrição</label>
+        <textarea id="description" rows="4" placeholder="Explique brevemente o que está acontecendo..." required></textarea>
+
+        <label for="photo">Foto (opcional)</label>
+        <input id="photo" type="file" accept="image/*">
+        <p class="hint">A foto é opcional e será armazenada somente neste navegador.</p>
+        <button class="primary" type="submit">Enviar solicitação</button>
+        <p id="form-message" class="form-message" role="status"></p>
+      </form>
+    </section>
+
+    <section id="solicitacoes" class="page">
+      <div class="page-heading">
+        <p class="eyebrow">ACOMPANHAMENTO</p>
+        <h1>Solicitações registradas</h1>
+        <p>Veja os problemas cadastrados neste dispositivo.</p>
+      </div>
+      <div id="report-list" class="report-list"></div>
+    </section>
+
+    <section id="sobre" class="page">
+      <div class="page-heading">
+        <p class="eyebrow">SOBRE O PROJETO</p>
+        <h1>Uma ideia para melhorar o lugar onde vivemos.</h1>
+        <p>O Minha Comunidade é um protótipo de aplicativo pensado para aproximar moradores e serviços públicos.</p>
+      </div>
+      <div class="about-card">
+        <h2>Qual problema queremos resolver?</h2>
+        <p>Muitas vezes, problemas como buracos, lixo acumulado e falta de iluminação são percebidos pelos moradores, mas não são comunicados de forma organizada.</p>
+        <h2>Como a tecnologia ajuda?</h2>
+        <p>A proposta é reunir em um só lugar a descrição, a localização e uma foto do problema, facilitando a visualização das necessidades do bairro.</p>
+        <h2>Limite deste protótipo</h2>
+        <p>Esta versão demonstra a navegação e o cadastro. Para funcionar de verdade, seria necessário conectar o aplicativo a um sistema seguro utilizado pelos órgãos responsáveis.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>Minha Comunidade · Protótipo escolar</footer>
+</body>
+</html>
